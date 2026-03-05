@@ -1,6 +1,4 @@
-import sqlite3
-import os
-import asyncio
+ import sqlite3
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -201,42 +199,38 @@ async def edit_note(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-async def main():
+# 봇 실행
+app = ApplicationBuilder().token(TOKEN).build()
 
-    app = ApplicationBuilder().token(TOKEN).build()
+add_handler = ConversationHandler(
+    entry_points=[CommandHandler("add", add)],
+    states={
+        NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, name)],
+        PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, phone)],
+        BIRTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, birth)],
+        NOTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, note)],
+    },
+    fallbacks=[],
+)
 
-    add_handler = ConversationHandler(
-        entry_points=[CommandHandler("add", add)],
-        states={
-            NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, name)],
-            PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, phone)],
-            BIRTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, birth)],
-            NOTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, note)],
-        },
-        fallbacks=[],
-    )
+edit_handler = ConversationHandler(
+    entry_points=[CommandHandler("edit", edit)],
+    states={
+        EDIT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_name)],
+        EDIT_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_phone)],
+        EDIT_BIRTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_birth)],
+        EDIT_NOTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_note)],
+    },
+    fallbacks=[],
+)
 
-    edit_handler = ConversationHandler(
-        entry_points=[CommandHandler("edit", edit)],
-        states={
-            EDIT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_name)],
-            EDIT_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_phone)],
-            EDIT_BIRTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_birth)],
-            EDIT_NOTE: [MessageHandler(filters.TEXT & ~filters.COMMAND, edit_note)],
-        },
-        fallbacks=[],
-    )
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("list", list_members))
+app.add_handler(CommandHandler("find", find_member))
+app.add_handler(CommandHandler("delete", delete_member))
+app.add_handler(add_handler)
+app.add_handler(edit_handler)
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("list", list_members))
-    app.add_handler(CommandHandler("find", find_member))
-    app.add_handler(CommandHandler("delete", delete_member))
-    app.add_handler(add_handler)
-    app.add_handler(edit_handler)
+print("봇 실행중")
 
-    print("봇 실행중")
-    await app.run_polling()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+app.run_polling()
