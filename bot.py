@@ -10,7 +10,7 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-TOKEN = os.getenv("8697768952:AAEOsFwTwbjtfKmNHgN0TTChewCwBEJM0Us")
+TOKEN = ("8697768952:AAEOsFwTwbjtfKmNHgN0TTChewCwBEJM0Us")
 
 conn = sqlite3.connect("members.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -234,3 +234,4 @@ app.add_handler(add_handler)
 app.add_handler(edit_handler)
 
 app.run_polling()
+
