@@ -1,4 +1,4 @@
- import sqlite3
+import sqlite3
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -234,3 +234,4 @@ app.add_handler(edit_handler)
 print("봇 실행중")
 
 app.run_polling()
+
